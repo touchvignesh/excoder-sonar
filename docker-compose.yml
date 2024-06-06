@@ -1,0 +1,33 @@
+services:
+  sonarqube:
+    image: sonarqube:lts-community
+    depends_on:
+      - postgres-sonar
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://postgres-sonar:5432/excoder-sonar
+      SONAR_JDBC_USERNAME: excoder_sonar_dba
+      SONAR_JDBC_PASSWORD: postgres123
+    ports:
+      - "9001:9000"
+    volumes:
+      - ../../data/excoder-sonar/sonar/conf:/opt/sonarqube/conf
+      - ../../data/excoder-sonar/sonar/data:/opt/sonarqube/data
+      - ../../data/excoder-sonar/sonar/extensions:/opt/sonarqube/extensions
+      - ../../data/excoder-sonar/sonar/logs:/opt/sonarqube/logs
+      - ../../data/excoder-sonar/sonar/temp:/opt/sonarqube/temp
+
+  postgres-sonar:
+    image: postgres:16.3-alpine
+    ports:
+      - "5436:5432"
+    volumes:
+      - ../../data/excoder-sonar/postgres-sonar:/var/lib/postgresql/data
+    environment:
+      - TZ=Asia/Kolkata
+      - POSTGRES_USER=excoder_sonar_dba
+      - POSTGRES_PASSWORD=postgres123
+      - POSTGRES_DB=excoder-sonar
+
+networks:
+  default:
+    name: excoder_network
